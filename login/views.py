@@ -4,25 +4,24 @@ import os
 def login(request):
     return render(request, 'login.html')
 
-
 def submit(request):
     return render(request, 'signup.html')
 
 
 from django.shortcuts import render, redirect
 from .models import User
-from django.contrib.auth.hashers import make_password  # To hash passwords
+from django.contrib.auth.hashers import make_password,check_password  # To hash passwords
 
 def signup(request):
     message = None
     success = False
     if request.method == 'POST':
         # Collect form data
+        
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         email = request.POST.get('email')
         password = request.POST.get('password')
-
         # Save data to the database
         try:
             user = User(
@@ -73,7 +72,7 @@ def signup(request):
 
 
 
-
+'''
 def main(request):
     if request.method == 'POST':
         # Get data from HTML page elements using 'name' variable (unique identifier)
@@ -85,6 +84,35 @@ def main(request):
         
             
     return render(request, 'login.html')
+'''
+
+from django.shortcuts import render, redirect
+from .models import User  # Import your User model
+
+
+
+def main(request):
+    if request.method == 'POST':
+        # Retrieve the input from the form
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # Check if the user exists in the database
+        try:
+            user = User.objects.get(name=username)
+            print(user.name)
+            if check_password(password, user.password):  # Verify password correctly
+                return render(request, 'main.html')  # Render the main page
+            else:
+                # If the password does not match
+                return render(request, 'login.html', {'error': 'Invalid credentials'})
+        except User.DoesNotExist:
+            # If the user is not found
+            return render(request, 'login.html', {'error': 'User not found'})
+
+    return render(request, 'login.html')
+
+
     
     
     
